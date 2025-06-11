@@ -68,11 +68,11 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-primary bg-opacity-20 rounded-full;
+  @apply bg-primary-500/20 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-primary bg-opacity-40;
+  @apply bg-primary-500/40;
 }
 
 /* Smooth scrolling */
@@ -114,29 +114,21 @@ html {
 
 /* Glass morphism effect */
 .glass {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  @apply bg-white/10 backdrop-blur-md border border-white/20;
 }
 
 .dark .glass {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @apply bg-black/20 border-white/10;
 }
 
 /* Text gradient effect */
 .text-gradient {
-  background: linear-gradient(135deg, #A087FF 0%, #AC47AA 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  @apply bg-brand-gradient bg-clip-text text-transparent;
 }
 
 /* Hero gradient background */
 .hero-gradient {
-  background: linear-gradient(135deg, 
-    rgba(160, 135, 255, 0.1) 0%, 
-    rgba(172, 71, 170, 0.1) 100%);
+  @apply bg-gradient-to-br from-primary-500/10 to-secondary-500/10;
 }
 
 /* Project card hover effects */
@@ -157,7 +149,7 @@ html {
 
 /* Focus ring for accessibility */
 .focus-ring {
-  @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
 }
 
 /* Typography improvements */
@@ -183,10 +175,9 @@ html {
 
 /* Custom button styles */
 .btn-glow {
-  box-shadow: 0 0 20px rgba(160, 135, 255, 0.3);
-  transition: box-shadow 0.3s ease;
+  @apply shadow-lg shadow-primary-500/30 transition-shadow duration-300;
 }
 
 .btn-glow:hover {
-  box-shadow: 0 0 30px rgba(160, 135, 255, 0.5);
+  @apply shadow-xl shadow-primary-500/50;
 } 

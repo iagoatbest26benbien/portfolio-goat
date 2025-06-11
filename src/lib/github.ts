@@ -112,7 +112,7 @@ export async function getGitHubStats(username?: string): Promise<GitHubStats> {
     throw new Error('GitHub username not provided');
   }
 
-  const [userInfo, repos] = await Promise.all([
+  const [, repos] = await Promise.all([
     getGitHubUser(user),
     getGitHubRepositories(user, { per_page: 100 })
   ]);
@@ -165,7 +165,7 @@ export async function getRepositoryReadme(
     }
     
     return response.content;
-  } catch (error) {
+  } catch {
     // README not found or not accessible
     return null;
   }
@@ -176,8 +176,7 @@ export async function validateGitHubToken(): Promise<boolean> {
   try {
     await githubFetch('/user');
     return true;
-  } catch (error) {
-    console.error('GitHub token validation failed:', error);
+  } catch {
     return false;
   }
 }

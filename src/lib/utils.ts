@@ -7,37 +7,25 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // Fonction pour formater une date
-export function formatDate(date: Date | string): string {
-  const d = new Date(date);
-  return d.toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+export function formatDate(date: string | Date): string {
+  return new Intl.DateTimeFormat("fr-FR", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(date));
 }
 
 // Fonction pour formater un nombre (ex: 1000 -> 1k)
 export function formatNumber(num: number): string {
-  if (num >= 1000000) {
-    return Math.floor(num / 1000000) + 'm';
-  }
-  if (num >= 1000) {
-    return Math.floor(num / 1000) + 'k';
-  }
-  return num.toString();
+  return new Intl.NumberFormat("fr-FR").format(num);
 }
 
 // Fonction pour générer un slug à partir d'un titre
-export function slugify(text: string): string {
-  return text
-    .toString()
+export function slugify(str: string): string {
+  return str
     .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
 }
 
 // Fonction pour extraire le nom du repository depuis une URL GitHub
@@ -75,21 +63,24 @@ export function getLanguageColor(language: string): string {
 }
 
 // Fonction pour déboucer une fonction (utile pour la recherche)
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
+  return function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
     clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
+    timeout = setTimeout(later, wait);
   };
 }
 
 // Fonction pour tronquer du texte
-export function truncate(text: string, length: number): string {
-  if (text.length <= length) return text;
-  return text.substring(0, length) + '...';
+export function truncate(str: string, length: number): string {
+  return str.length > length ? `${str.substring(0, length)}...` : str;
 }
 
 // Fonction pour valider une URL
@@ -97,7 +88,8 @@ export function isValidUrl(string: string): boolean {
   try {
     new URL(string);
     return true;
-  } catch (_) {
+  } catch {
+    // L'erreur est ignorée intentionnellement : URL invalide
     return false;
   }
 }

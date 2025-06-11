@@ -1,12 +1,24 @@
 import { Suspense } from 'react';
-import { Github, ExternalLink, Star, GitFork, Mail, Linkedin, Twitter } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Github, ExternalLink, Star, GitFork, Mail, Linkedin } from 'lucide-react';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getGitHubUser, getGitHubRepositories, getGitHubStats } from '@/lib/github';
-import { formatNumber, getLanguageColor, formatDate } from '@/lib/utils';
-import Image from 'next/image';
-import Link from 'next/link';
+import { formatNumber, getLanguageColor } from '@/lib/utils';
+
+interface GitHubProject {
+  id: number;
+  name: string;
+  description: string | null;
+  html_url: string;
+  homepage: string | null;
+  language: string | null;
+  topics: string[];
+  stargazers_count: number;
+  forks_count: number;
+}
 
 // Composant de chargement pour les projets
 function ProjectsSkeleton() {
@@ -20,7 +32,7 @@ function ProjectsSkeleton() {
 }
 
 // Composant pour afficher un projet GitHub
-function GitHubProjectCard({ project }: { project: any }) {
+function GitHubProjectCard({ project }: { project: GitHubProject }) {
   return (
     <Card className="project-card h-full flex flex-col">
       <CardHeader>
@@ -58,8 +70,8 @@ function GitHubProjectCard({ project }: { project: any }) {
           {/* Technologies (topics) */}
           {project.topics && project.topics.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {project.topics.slice(0, 4).map((topic: string) => (
-                <Badge key={topic} variant="tech" className="text-xs">
+              {project.topics.slice(0, 4).map((topic) => (
+                <Badge key={topic} className="text-xs">
                   {topic}
                 </Badge>
               ))}
@@ -81,17 +93,23 @@ function GitHubProjectCard({ project }: { project: any }) {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" asChild>
-              <Link href={project.html_url} target="_blank" rel="noopener noreferrer">
-                <Github className="w-4 h-4" />
-              </Link>
-            </Button>
+            <Link 
+              href={project.html_url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-[#A087FF] hover:text-white h-9 rounded-md px-3"
+            >
+              <Github className="w-4 h-4" />
+            </Link>
             {project.homepage && (
-              <Button size="sm" variant="outline" asChild>
-                <Link href={project.homepage} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="w-4 h-4" />
-                </Link>
-              </Button>
+              <Link 
+                href={project.homepage} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-[#A087FF] hover:text-white h-9 rounded-md px-3"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </Link>
             )}
           </div>
         </div>
@@ -129,7 +147,7 @@ async function GitHubStats() {
         </Card>
       </div>
     );
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -154,7 +172,7 @@ async function GitHubProjects() {
         ))}
       </div>
     );
-  } catch (error) {
+  } catch {
     return (
       <div className="text-center py-12">
         <p className="text-destructive">Erreur lors du chargement des projets GitHub.</p>
@@ -198,18 +216,22 @@ async function HeroSection() {
           </p>
           
           <div className="flex flex-wrap justify-center gap-4 mb-8">
-            <Button size="lg" variant="gradient" className="btn-glow" asChild>
-              <Link href="#projects">
-                Voir mes projets
-              </Link>
-            </Button>
+            <Link 
+              href="#projects"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-brand-gradient text-white hover:opacity-90 shadow-lg h-11 rounded-md px-8 btn-glow"
+            >
+              Voir mes projets
+            </Link>
             
-            <Button size="lg" variant="outline" asChild>
-              <Link href={user.html_url} target="_blank" rel="noopener noreferrer">
-                <Github className="w-5 h-5 mr-2" />
-                GitHub
-              </Link>
-            </Button>
+            <Link 
+              href={user.html_url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-[#A087FF] hover:text-white h-11 rounded-md px-8"
+            >
+              <Github className="w-5 h-5 mr-2" />
+              GitHub
+            </Link>
           </div>
           
           {/* Informations supplémentaires */}
@@ -238,7 +260,7 @@ async function HeroSection() {
         </div>
       </section>
     );
-  } catch (error) {
+  } catch {
     return (
       <section className="hero-gradient py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center">
@@ -248,11 +270,12 @@ async function HeroSection() {
           <p className="text-xl md:text-2xl text-muted-foreground mb-8">
             Développeur passionné de 17 ans, créateur de solutions digitales innovantes
           </p>
-          <Button size="lg" variant="gradient" className="btn-glow" asChild>
-            <Link href="#projects">
-              Voir mes projets
-            </Link>
-          </Button>
+          <Link 
+            href="#projects"
+            className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-brand-gradient text-white hover:opacity-90 shadow-lg h-11 rounded-md px-8 btn-glow"
+          >
+            Voir mes projets
+          </Link>
         </div>
       </section>
     );
@@ -303,23 +326,27 @@ export default function HomePage() {
             Travaillons <span className="text-gradient">ensemble</span>
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
-            Vous avez un projet en tête ? N'hésitez pas à me contacter !
+            Vous avez un projet en tête ? N&apos;hésitez pas à me contacter !
           </p>
           
           <div className="flex flex-wrap justify-center gap-4">
-            <Button size="lg" variant="gradient" className="btn-glow" asChild>
-              <Link href="mailto:anaselmanssouri479@gmail.com">
-                <Mail className="w-5 h-5 mr-2" />
-                Me contacter
-              </Link>
-            </Button>
+            <Link 
+              href="mailto:anaselmanssouri479@gmail.com"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-brand-gradient text-white hover:opacity-90 shadow-lg h-11 rounded-md px-8 btn-glow"
+            >
+              <Mail className="w-5 h-5 mr-2" />
+              Me contacter
+            </Link>
             
-            <Button size="lg" variant="outline" asChild>
-              <Link href="https://www.linkedin.com/in/anas-el-manssouri-268a35295/" target="_blank" rel="noopener noreferrer">
-                <Linkedin className="w-5 h-5 mr-2" />
-                LinkedIn
-              </Link>
-            </Button>
+            <Link 
+              href="https://www.linkedin.com/in/anas-el-manssouri-268a35295/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-[#A087FF] hover:text-white h-11 rounded-md px-8"
+            >
+              <Linkedin className="w-5 h-5 mr-2" />
+              LinkedIn
+            </Link>
           </div>
         </div>
       </section>
